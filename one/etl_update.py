@@ -96,7 +96,7 @@ def transform(records):
     for rec in records:
         if set(schedule_keys).issubset(set(rec["schedule"][0])):
             schedule = [{
-                "no": i["no"],
+                "no": int(i["no"]),
                 "event": i["statusNm"],
                 "placeName": i["placeNm"],
                 "yardName": i["yardNm"],

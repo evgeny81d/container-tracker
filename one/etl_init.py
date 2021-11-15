@@ -153,7 +153,7 @@ def transform(data):
                      "lloydNo"]
     if set(schedule_keys).issubset(set(data["schedule"][0])):
         schedule = [{
-            "no": i["no"],
+            "no": int(i["no"]),
             "event": i["statusNm"],
             "placeName": i["placeNm"],
             "yardName": i["yardNm"],
