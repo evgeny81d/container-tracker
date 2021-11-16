@@ -4,18 +4,13 @@
 """Set trackEnd field in database to current date and time for containers
 which reached point of destination."""
 
-import json
 import sys
+import json
 from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from bson.json_util import dumps
-
-# MongoDB connection details
-USER = "TrackEnd"
-PWD = "<tkfzDtcnf844"
-HOST = "194.58.102.147"
-URI = "mongodb://{}:{}@{}:27017/".format(USER,PWD,HOST)
+import access
 
 def log(message):
     """Log function to log errors."""
@@ -26,7 +21,7 @@ def log(message):
 def containers_at_destination():
     """Find containers which reached point of destination."""
     # Prepare connection
-    conn = MongoClient(URI)
+    conn = MongoClient(access.track_end)
     # Query database
     try:
         conn.admin.command("ping")
@@ -58,7 +53,7 @@ def set_track_end(data):
     if not data:
         return False
     # Prepare connection
-    conn = MongoClient(URI)
+    conn = MongoClient(access.track_end)
     # Close records
     try:
         conn.admin.command("ping")
@@ -89,4 +84,3 @@ def main():
 
 if __name__ == '__main__':
 	sys.exit(main())
-
