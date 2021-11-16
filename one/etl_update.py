@@ -1,21 +1,16 @@
 #!/usr/bin/env python3
 
-"""ETL update script for one shippings."""
-"""Updates records in one database, tracking collection."""
+# ETL update script for one-line shippings.
+# Updates records in one database, tracking collection.
 
+import sys
 import requests
+import json
 from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from bson.json_util import dumps
-import sys
-import json
-
-# MongoDB connection details
-USER = "OneUpdate"
-PWD = "<tkfzDtcnf844"
-HOST = "194.58.102.147"
-URI = "mongodb://{}:{}@{}:27017/".format(USER,PWD,HOST)
+import access
 
 # External data resource
 URL = "https://ecomm.one-line.com/ecom/CUP_HOM_3301GS.do"
@@ -29,7 +24,7 @@ def log(message):
 def records_to_update():
     """Prepare records which require update."""
     # Prepare connection, query and project fields
-    conn = MongoClient(URI)
+    conn = MongoClient(access.update)
     now = datetime.now().replace(microsecond=0)
     query = {
         "trackEnd": None,
@@ -118,7 +113,7 @@ def update(records):
     if not records:
         return False
     # Connect to database and update
-    conn = MongoClient(URI)
+    conn = MongoClient(access.update)
     try:
         conn.admin.command("ping")
         for rec in records:
@@ -132,18 +127,16 @@ def update(records):
             else:
                 log("[ETL Update] [Update] "\
                 + f"[Not updated {rec['cntrNo']}]")
+        conn.close()
     except ConnectionFailure:
-        for rec in records:
-            log("[ETL Update] [Update] "\
-                + f"[Connection failure for {rec['cntrNo']}]")
+        log(f"[ETL Update] [Update] [Connection failure]")
+        conn.close()
     except BaseException as err:
-        for rec in records:
-            log("[ETL Update] [Update] "\
-                + f"[{err.details} for {rec['cntrNo']}]")
-    conn.close()
+        log(f"[ETL Update] [Update] [{err}]")
+        conn.close()
 
 def main():
-	"""ETL update pipeline"""
+	"""Pipeline."""
 	records = records_to_update()
 	raw_records = extract_schedule_details(records)
 	transformed_records = transform(raw_records)

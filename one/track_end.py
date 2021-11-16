@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 
-"""Track end script for one shippings."""
-"""Set trackEnd field in database to current date and time for containers
-which reached point of destination."""
+# Track end script for one-line shippings.
+# Set trackEnd field in database to current date and time for containers
+# which reached point of destination.
 
 import sys
 import json
@@ -78,7 +78,7 @@ def set_track_end(data):
         return False
 
 def main():
-	"""Main function."""
+	"""Pipeline."""
 	containers = containers_at_destination()
 	set_track_end(containers)
 

@@ -1,20 +1,16 @@
 #!/usr/bin/env python3
 
-"""ETL init script for one shippings."""
-"""Loads new records into one database, tracking and init collections."""
+# ETL init script for one-line shippings.
+# Loads new records into one database, tracking and init collections.
 
+import sys
 import requests
 import time
 from datetime import datetime
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 from bson.json_util import dumps
-
-# MongoDB connection details
-USER = "OneInit"
-PWD = "<tkfzDtcnf844"
-HOST = "194.58.102.147"
-URI = "mongodb://{}:{}@{}:27017/".format(USER,PWD,HOST)
+import access
 
 # External data resource
 URL = "https://ecomm.one-line.com/ecom/CUP_HOM_3301GS.do"
@@ -26,9 +22,8 @@ def log(message):
         f.write(timestamp + " " + message + "\n")
 
 def check_record(bill_number):
-    """Check that init and tracking database
-    does not have container record yet."""
-    conn = MongoClient(URI)
+    """Check that init and tracking database does not have container record yet."""
+    conn = MongoClient(access.init)
     query = {"blNo": bill_number, "trackEnd": None}
     try:
         conn.admin.command("ping")
@@ -124,10 +119,9 @@ def transform(data):
     """Transforms raw data for database load."""
     # Check data argument
     if not data:
-        log("[ETL Init] [Transform phase]"\
+        log("[ETL Init] [Transform]"\
             + f" [No raw data]")
         return False
-    
     # Check contnainer keys and extract container info
     cntr_keys = ["cntrNo", "cntrTpszNm", "copNo", "blNo"]
     if set(cntr_keys).issubset(set(data["container"])):
@@ -140,13 +134,14 @@ def transform(data):
             "trackEnd": None,
             "outboundTerminal": "",
             "inboundTerminal": "",
+            "vesselName": None,
+            "location": None,
             "schedule": None,
         }
     else:
         log("[ETL Init] [Transform]"\
             + f" [Keys do not match in container data {data['number']}]")
         return False
-    
     # Check schedule keys and extract schedule data
     schedule_keys = ["no", "statusNm", "placeNm", "yardNm",
                      "eventDt", "actTpCd", "actTpCd", "vslEngNm",
@@ -183,9 +178,8 @@ def load(data):
     if not data:
         log("[ETL Init] [Load] [No data to load]")
         return None
-    
     # Connect to database and load data
-    conn = MongoClient(URI)
+    conn = MongoClient(access.init)
     try:
         conn.admin.command("ping")
         cur_init = conn.one.init.insert_one(data)
@@ -207,7 +201,7 @@ def load(data):
         conn.close()
 
 def main(args):
-    """ETL init pipeline."""
+    """Pipeline."""
     if len(args) > 0:
         for arg in args:
             if check_record(arg):
