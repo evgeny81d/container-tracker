@@ -3,13 +3,13 @@
 
 # Init operations
 init = "mongodb://{}:{}@{}:27017/"\
-	.format("user", "pwd", "host")
+	.format("OneInit", "<tkfzDtcnf844", "194.58.102.147")
 
 # Update operations
 update = "mongodb://{}:{}@{}:27017/"\
-	.format("user", "pwd", "host")
+.format("OneUpdate", "<tkfzDtcnf844", "194.58.102.147")
 
 # Track end operations
 track_end = "mongodb://{}:{}@{}:27017/"\
-	.format("user", "pwd", "host")
+	.format("TrackEnd", "<tkfzDtcnf844", "194.58.102.147")
 	
