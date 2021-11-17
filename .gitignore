@@ -7,8 +7,9 @@ __pycache__/
 *.so
 
 # Access files with uri user/pwd/host for MongoDB
+access.py
+one-line/access.py
 dev/access.py
-one/access.py
 
 # Distribution / packaging
 .Python
