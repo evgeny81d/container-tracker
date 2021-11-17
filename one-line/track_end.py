@@ -22,14 +22,26 @@ def containers_at_destination():
     """Find containers which reached point of destination."""
     # Prepare connection
     conn = MongoClient(access.track_end)
-    # Query database
+    # Query database: count all documents with status=A and
+    # compare with total number of documents.
     try:
         conn.admin.command("ping")
         cur = conn.one.tracking.aggregate([
             {"$match": {"trackEnd": None}},
-            {"$addFields": {"last": {"$last": "$schedule"}}},
-            {"$match": {"last.status": "A" }},
-            {"$project": {"cntrNo": 1, "_id": 0}}
+            {"$addFields": {
+                "onlyA": {
+                    "$filter": {
+                        "input": "$schedule",
+                        "as": "item",
+                        "cond": {"$eq": ["$$item.status", "A"]}
+            }}}},
+            {"$redact": {
+                "$cond": {
+                    "if": {"$ne": [{"$size": "$onlyA"}, {"$size": "$schedule"}]},
+                    "then": "$$PRUNE",
+                    "else": "$$KEEP"
+                }}},
+            {"$project": {"_id": 0, "cntrNo": 1}}
         ])
         records = json.loads(dumps(cur))
         conn.close()
