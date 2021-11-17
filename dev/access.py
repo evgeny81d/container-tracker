@@ -3,7 +3,7 @@
 
 # Init operations
 init = "mongodb://{}:{}@{}:27017/"\
-	.format("userdf", "pwd", "host")
+	.format("user", "pwd", "host")
 
 # Update operations
 update = "mongodb://{}:{}@{}:27017/"\
