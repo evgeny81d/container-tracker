@@ -183,7 +183,7 @@ def parse_lon_lat(html):
         obj = soup.find("div", class_=i)
         if obj:
             text = obj.text
-            if text.replace(".", "").isdigit():
+            if text.replace(".", "").replace("-", "").isdigit():
                 location.append(text)
             else:
                 location.append("")
